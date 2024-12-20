@@ -1,0 +1,74 @@
+
+
+Professional Certificate Program in Full 
+Stack Development -MERN
+
+Phase-End Project
+
+Online Food Ordering Application
+
+Objective
+To  develop a food ordering application that includes the following 
+functionalities:
+•Registration
+•Login
+•Filter food categories
+•Adding items to the cart
+•Payment gateway
+
+Problem Statement and Motivation
+Real-time scenario:
+The online food ordering application is a website tailored for the food delivery 
+industry. It enables hotels and restaurants to expand their business reach 
+while minimizing labor costs. This system simplifies the management of an 
+online menu, allowing customers to effortlessly browse and add items to 
+their wish list.
+As a front-end developer for an online food ordering application, your 
+primary role involves designing a user-friendly and responsive interface, 
+ensuring compatibility across various devices. Key tasks include coding the 
+frontend functionality using web technologies, integrating with backend 
+services for features like user authentication and order processing, and 
+implementing a secure login for administrators.
+
+Industry Relevance
+The following tools are widely being used in the industry to design the 
+frontend of a web application:
+1.Git: It serves as a version control system, allowing developers to track 
+changes, collaborate on different versions of the codebase, and manage 
+updates without overwriting any part of the project.
+2.HTML: It is used to structure the content on the web pages, laying out the 
+foundation for text, images, and other multimedia elements in the project.
+3.CSS: It is employed to style and layout the web pages designed with 
+HTML. It controls the visual appearance, from fonts and colors to spacing 
+and responsiveness.
+
+Industry Relevance
+4.JavaScript: It adds interactivity and dynamic elements to the web pages. It 
+is used for client-side scripting to create responsive, interactive elements 
+for the user interface.
+5.Bootstrap: It is a front-end framework used for designing responsive and 
+mobile-first web pages. It provides pre-written CSS and JavaScript 
+templates for various interface components, significantly speeding up the 
+development process.
+
+Tasks
+The following tasks outline the frontend development process of an online 
+food ordering app:
+1.Set up a remote Git repository on GitHub to manage and track the 
+development of the frontend
+2.Use HTML to lay out the structural foundation of the application
+3.Apply CSS to style the HTML elements, focusing on visual appeal, layout, 
+and responsiveness
+4.Integrate Bootstrap for its responsive design components
+5.Use JavaScript to add dynamic features, such as interactive menus, form 
+validations, real-time updating of cart items, and handling user events
+6.Implement A JAX calls for loading menu items or sending data to the 
+server without refreshing the page
+
+Project References
+•Task 1: Lesson 2
+•Task 2 and 3: Lesson 3
+•Task 4: Lesson 6
+•Task 5 and 6: Lesson 4 and 5
+
+Thank you

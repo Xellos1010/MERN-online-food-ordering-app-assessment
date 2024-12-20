@@ -1,0 +1,6 @@
+Using HTML, CSS and Javascript create a Food Ordering app with:
+Registration
+Login
+Filter food categories
+Adding Items to categories
+Payment Gateway
