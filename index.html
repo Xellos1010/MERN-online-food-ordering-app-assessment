@@ -28,7 +28,7 @@
 
       .hero-section {
         background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-          url("/api/placeholder/1200/400");
+          url("assets/hero2.jpg");
         background-size: cover;
         color: white;
         padding: 100px 0;
@@ -88,6 +88,7 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+        <!-- Code Snippet index.html:(90-124) -->
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
@@ -102,6 +103,7 @@
           </ul>
           <div class="d-flex">
             <button
+              id="loginBtn"
               class="btn btn-outline-light me-2"
               data-bs-toggle="modal"
               data-bs-target="#loginModal"
@@ -109,12 +111,16 @@
               Login
             </button>
             <button
+              id="registerBtn"
               class="btn btn-light me-2"
               data-bs-toggle="modal"
               data-bs-target="#registerModal"
             >
               Register
             </button>
+            <div id="loggedInUser"></div>
+            <!-- Logout button -->
+            <button id="logoutBtn" style="display: none">Logout</button>
             <button class="btn btn-primary position-relative" id="cartBtn">
               <i class="bi bi-cart"></i> Cart
               <span class="badge bg-danger cart-badge" id="cartCount">0</span>
@@ -199,11 +205,21 @@
             <form id="loginForm">
               <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" required />
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email"
+                  required
+                />
               </div>
               <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-control" required />
+                <input
+                  type="password"
+                  class="form-control"
+                  name="password"
+                  required
+                />
               </div>
               <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
@@ -228,19 +244,34 @@
             <form id="registerForm">
               <div class="mb-3">
                 <label class="form-label">Name</label>
-                <input type="text" class="form-control" required />
+                <input type="text" class="form-control" name="name" required />
               </div>
               <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" required />
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email"
+                  required
+                />
               </div>
               <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-control" required />
+                <input
+                  type="password"
+                  class="form-control"
+                  name="password"
+                  required
+                />
               </div>
               <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" required />
+                <input
+                  type="password"
+                  class="form-control"
+                  name="confirmPassword"
+                  required
+                />
               </div>
               <button type="submit" class="btn btn-primary w-100">
                 Register
@@ -369,9 +400,6 @@
     <script>
       // State management
       let cart = [];
-      // commented out for local demo
-      //   let categories = [];
-      //   let menuItems = [];
       //   Sample Category Data
       const categories = [
         {
@@ -548,15 +576,20 @@
       const cartItemsContainer = document.getElementById("cartItems");
       const cartTotal = document.getElementById("cartTotal");
       const checkoutBtn = document.getElementById("checkoutBtn");
+      // Get the login, register, and logout elements
       const loginForm = document.getElementById("loginForm");
       const registerForm = document.getElementById("registerForm");
+      const logoutBtn = document.getElementById("logoutBtn");
 
       // Event Listeners
       cartBtn.addEventListener("click", toggleCart);
       closeCart.addEventListener("click", toggleCart);
+      checkoutBtn.addEventListener("click", handleCheckout);
+      // Event Listeners Authentication
       loginForm.addEventListener("submit", handleLogin);
       registerForm.addEventListener("submit", handleRegister);
-      checkoutBtn.addEventListener("click", handleCheckout);
+      // Add event listener to logout button
+      logoutBtn.addEventListener("click", handleLogout);
 
       // Cart Functions
       function toggleCart() {
@@ -663,37 +696,109 @@
           .join("");
       }
 
-      // Form Handlers
+      // Function to handle login
       async function handleLogin(e) {
         e.preventDefault();
         const formData = new FormData(loginForm);
         try {
-          const response = await fetch("/api/login", {
-            method: "POST",
-            body: formData,
-          });
-          if (response.ok) {
+          const email = formData.get("email");
+          const password = formData.get("password");
+          if (!email || !password) {
+            alert("Please fill in all fields");
+            return;
+          }
+          if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            alert("Invalid email address");
+            return;
+          }
+          if (password.length < 8) {
+            alert("Password must be at least 8 characters long");
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+          const user = storedUsers.find(
+            (user) => user.email === email && user.password === password
+          );
+          if (user) {
+            localStorage.setItem("userData", JSON.stringify(user));
             location.reload();
+          } else {
+            alert("Invalid email or password");
           }
         } catch (error) {
           console.error("Login error:", error);
         }
       }
 
+      // Function to handle register
       async function handleRegister(e) {
         e.preventDefault();
         const formData = new FormData(registerForm);
         try {
-          const response = await fetch("/api/register", {
-            method: "POST",
-            body: formData,
-          });
-          if (response.ok) {
-            location.reload();
+          const name = formData.get("name");
+          const email = formData.get("email");
+          const password = formData.get("password");
+          const confirmPassword = formData.get("confirmPassword");
+          if (!name || !email || !password || !confirmPassword) {
+            alert("Please fill in all fields");
+            return;
           }
+          if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            alert("Invalid email address");
+            return;
+          }
+          if (password.length < 8) {
+            alert("Password must be at least 8 characters long");
+            return;
+          }
+          if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+          const existingUser = storedUsers.find((user) => user.email === email);
+          if (existingUser) {
+            alert("Email already exists");
+            return;
+          }
+          const user = {
+            name,
+            email,
+            password,
+          };
+          storedUsers.push(user);
+          localStorage.setItem("users", JSON.stringify(storedUsers));
+          localStorage.setItem("userData", JSON.stringify(user));
+          location.reload();
         } catch (error) {
           console.error("Registration error:", error);
         }
+      }
+
+      // Function to handle logout
+      function handleLogout() {
+        localStorage.removeItem("userData");
+        location.reload();
+      }
+
+      // Check if user is logged in on page load
+      if (localStorage.getItem("userData")) {
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        // Display logged in user's name or email
+        const loggedInUser = document.getElementById("loggedInUser");
+        loggedInUser.textContent = `Welcome, ${userData.name}!`;
+        // Hide login and register buttons
+        const loginBtn = document.getElementById("loginBtn");
+        const registerBtn = document.getElementById("registerBtn");
+        loginBtn.style.display = "none";
+        registerBtn.style.display = "none";
+        // Show logout button
+        logoutBtn.style.display = "block";
+      } else {
+        // Hide logout button
+        logoutBtn.style.display = "none";
       }
 
       async function handleCheckout() {
