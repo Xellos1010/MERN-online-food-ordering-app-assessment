@@ -73,6 +73,33 @@
       #cart-sidebar.active {
         right: 0;
       }
+      #loggedInUser {
+        display: none;
+        font-size: 16px;
+        font-weight: bold;
+        color: #337ab7; /* Bootstrap primary text color */
+        background-color: #f9f9f9; /* Bootstrap light gray background */
+        padding: 10px;
+        border-radius: 5px;
+        margin-right: 10px; /* Add margin to the right */
+      }
+
+      #logoutBtn {
+        margin-right: 10px; /* Add margin to the right */
+      }
+
+      #logoutBtn {
+        background-color: #dc3545; /* Bootstrap danger color */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+      
+      #logoutBtn:hover {
+        background-color: #bb2d3b; /* Darker shade of Bootstrap danger color */
+      }
     </style>
   </head>
   <body>
@@ -120,7 +147,7 @@
             </button>
             <div id="loggedInUser"></div>
             <!-- Logout button -->
-            <button id="logoutBtn" style="display: none">Logout</button>
+            <button id="logoutBtn" class="btn btn-danger" style="display: none">Logout</button>
             <button class="btn btn-primary position-relative" id="cartBtn">
               <i class="bi bi-cart"></i> Cart
               <span class="badge bg-danger cart-badge" id="cartCount">0</span>
@@ -629,17 +656,28 @@
       async function fetchCategories() {
         try {
           // Simulate API delay
-          await new Promise((resolve) => setTimeout(resolve, 300));
+          await new Promise((resolve) => setTimeout(resolve, 100));
           renderCategories();
         } catch (error) {
           console.error("Error fetching categories:", error);
         }
       }
 
+      let selectedCategoryId = null;
+
       async function fetchMenuItems(categoryId = null) {
+        if (categoryId === selectedCategoryId) {
+          // If the same category is clicked again, reset the selected category and fetch the full menu
+          selectedCategoryId = null;
+          categoryId = null;
+        } else {
+          // If a different category is clicked, update the selected category
+          selectedCategoryId = categoryId;
+        }
+
         try {
           // Simulate API delay
-          await new Promise((resolve) => setTimeout(resolve, 300));
+          await new Promise((resolve) => setTimeout(resolve, 100));
           const filteredItems = categoryId
             ? menuItems.filter((item) => item.categoryId === categoryId)
             : menuItems;
@@ -671,29 +709,34 @@
           .join("");
       }
 
-      function renderMenuItems() {
+      function renderMenuItems(filteredItems) {
         const menuContainer = document.getElementById("menuItems");
-        menuContainer.innerHTML = menuItems
-          .map(
-            (item) => `
-                      <div class="col-md-6 col-lg-4">
-                          <div class="menu-item p-3">
-                              <img src="${item.imageUrl}" class="img-fluid rounded mb-3" alt="${item.name}">
-                              <h5>${item.name}</h5>
-                              <p class="text-muted">${item.description}</p>
-                              <div class="d-flex justify-content-between align-items-center">
-                                  <h6 class="mb-0">$${item.price}</h6>
-                                  <button class="btn btn-primary" onclick="addToCart({
-                                      id: ${item.id},
-                                      name: '${item.name}',
-                                      price: ${item.price}
-                                  })">Add to Cart</button>
-                              </div>
-                          </div>
-                      </div>
-                  `
-          )
-          .join("");
+        if (filteredItems.length === 0) {
+          // If no items are filtered, display the full menu
+          fetchMenuItems();
+        } else {
+          menuContainer.innerHTML = filteredItems
+            .map(
+              (item) => `
+                <div class="col-md-6 col-lg-4">
+                  <div class="menu-item p-3">
+                    <img src="${item.imageUrl}" class="img-fluid rounded mb-3" alt="${item.name}">
+                    <h5>${item.name}</h5>
+                    <p class="text-muted">${item.description}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h6 class="mb-0">$${item.price}</h6>
+                      <button class="btn btn-primary" onclick="addToCart({
+                        id: ${item.id},
+                        name: '${item.name}',
+                        price: ${item.price}
+                      })">Add to Cart</button>
+                    </div>
+                  </div>
+                </div>
+              `
+            )
+            .join("");
+        }
       }
 
       // Function to handle login
@@ -789,6 +832,7 @@
         // Display logged in user's name or email
         const loggedInUser = document.getElementById("loggedInUser");
         loggedInUser.textContent = `Welcome, ${userData.name}!`;
+        loggedInUser.style.display = "block"; // Display the element
         // Hide login and register buttons
         const loginBtn = document.getElementById("loginBtn");
         const registerBtn = document.getElementById("registerBtn");
@@ -797,6 +841,8 @@
         // Show logout button
         logoutBtn.style.display = "block";
       } else {
+        const loggedInUser = document.getElementById("loggedInUser");
+        loggedInUser.style.display = "none"; // Hide the element
         // Hide logout button
         logoutBtn.style.display = "none";
       }
@@ -876,6 +922,15 @@
           toggleCart();
         }
       }
+
+      // Add event listener to category buttons
+      const categoryButtons = document.querySelectorAll(".category-card");
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const categoryId = button.dataset.categoryId;
+          fetchMenuItems(categoryId);
+        });
+      });
 
       // Initialize
       fetchCategories();
